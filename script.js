@@ -8,6 +8,9 @@ const DIRECTION = {
  
 const rounds = [5, 5, 3, 3, 2];
 const colors = ['#1abc9c', '#2ecc71', '#3498db', '#8c52ff', '#9b59b6'];
+// 获取屏幕宽度和高度
+var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
  
 // 乒乓球对象
 var Ball = {
@@ -29,7 +32,7 @@ const Ai = {
     new: function (side) {
         return {
             width: 18,
-            height: 180,
+            height: 200,
             x: side === 'left' ? 150 : this.canvas.width - 150,
             y: (this.canvas.height / 2) - 35,
             score: 0,
@@ -39,20 +42,31 @@ const Ai = {
     }
 };
  
-const Game = {
+let Game = {
     //初始化
     initialize: function () {
         this.canvas = document.querySelector('canvas');
         this.context = this.canvas.getContext('2d');
  
-        this.canvas.width = 1400;
-        this.canvas.height = 1000;
+        // this.canvas.width = 1400;
+        // this.canvas.height = 1000;
+        // 设置画布宽度和高度
+        this.canvas.width = screenWidth;
+        this.canvas.height = screenHeight;
  
         this.canvas.style.width = (this.canvas.width / 2) + 'px';
         this.canvas.style.height = (this.canvas.height / 2) + 'px';
  
         this.player = Ai.new.call(this, 'left');
+        // 玩家高度
+this.player.height = Math.floor(this.canvas.height / 8);
+// 玩家初始位置
+this.player.y = Math.floor((this.canvas.height - this.player.height) / 2);
         this.ai = Ai.new.call(this, 'right');
+        // 电脑高度
+this.ai.height = Math.floor(this.canvas.height / 8);
+// 电脑初始位置
+this.ai.y = Math.floor((this.canvas.height - this.ai.height) / 2);
         this.ball = Ball.new.call(this);
  
         this.ai.speed = 5;
@@ -255,7 +269,7 @@ const Game = {
         // 中线
         this.context.beginPath();
         this.context.setLineDash([7, 15]);
-        this.context.moveTo((this.canvas.width / 2), this.canvas.height - 140);
+        this.context.moveTo((this.canvas.width / 2), this.canvas.height-50);
         this.context.lineTo((this.canvas.width / 2), 140);
         this.context.lineWidth = 10;
         this.context.strokeStyle = '#ffffff';
@@ -309,10 +323,11 @@ const Game = {
     listen: () => {
         document.addEventListener('keydown', (event) => {
             //按下按钮开始游戏
-            if (pingPong.running === false) {
+            if (!pingPong.running) {
                 pingPong.running = true;
                 window.requestAnimationFrame(pingPong.loop);
             }
+        
  
             // 控制向上
             if (event.code === 'ArrowUp' || event.code === 'KeyW') pingPong.player.move = DIRECTION.UP;
@@ -323,7 +338,33 @@ const Game = {
  
         // 松开按键不移动
         document.addEventListener('keyup', (event) =>{ pingPong.player.move = DIRECTION.IDLE; });
-    },
+   
+    document.addEventListener('touchstart', function(event) {
+        // 获取触摸位置
+        var touchY = event.touches[0].clientY;
+        
+        // 判断触摸位置与玩家位置，控制移动方向
+        if (touchY < pingPong.player.y) pingPong.player.move = DIRECTION.UP;
+        else if (touchY > pingPong.player.y + pingPong.player.height) pingPong.player.move = DIRECTION.DOWN;
+    });
+    
+    document.addEventListener('touchend', function(event) {
+        pingPong.player.move = DIRECTION.IDLE;
+    });
+
+    document.addEventListener('mousedown', function(event) {
+        // 获取鼠标位置
+        var mouseY = event.clientY;
+        
+        // 判断鼠标位置与玩家位置，控制移动方向
+        if (mouseY < pingPong.player.y) pingPong.player.move = DIRECTION.UP;
+        else if (mouseY > pingPong.player.y + pingPong.player.height) pingPong.player.move = DIRECTION.DOWN;
+    });
+    
+    document.addEventListener('mouseup', function(event) {
+        pingPong.player.move = DIRECTION.IDLE;
+    });
+},
  
     // 重置球，转移球权至败方，赢者分数加一
     _resetTurn: function(winner, loser) {
@@ -348,5 +389,5 @@ const Game = {
 };
 
 //创建了一个基于 Game 对象的副本 pingPong，以便对游戏对象进行操作而不影响原始对象。
-const pingPong = Object.assign({}, Game);
+let pingPong = Object.assign({}, Game);
 pingPong.initialize();
