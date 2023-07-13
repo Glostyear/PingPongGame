@@ -8,9 +8,9 @@ const DIRECTION = {
  
 const rounds = [5, 5, 3, 3, 2];
 const colors = ['#1abc9c', '#2ecc71', '#3498db', '#8c52ff', '#9b59b6'];
-// 获取屏幕宽度和高度
-var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+// // 获取屏幕宽度和高度
+//var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+//var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
  
 // 乒乓球对象
 var Ball = {
@@ -32,7 +32,7 @@ const Ai = {
     new: function (side) {
         return {
             width: 18,
-            height: 200,
+            height: 180,
             x: side === 'left' ? 150 : this.canvas.width - 150,
             y: (this.canvas.height / 2) - 35,
             score: 0,
@@ -48,25 +48,25 @@ let Game = {
         this.canvas = document.querySelector('canvas');
         this.context = this.canvas.getContext('2d');
  
-        // this.canvas.width = 1400;
-        // this.canvas.height = 1000;
+        this.canvas.width = 1600;
+        this.canvas.height = 1000;
         // 设置画布宽度和高度
-        this.canvas.width = screenWidth;
-        this.canvas.height = screenHeight;
+        //this.canvas.width = screenWidth;
+        //this.canvas.height = screenHeight;
  
         this.canvas.style.width = (this.canvas.width / 2) + 'px';
         this.canvas.style.height = (this.canvas.height / 2) + 'px';
  
         this.player = Ai.new.call(this, 'left');
         // 玩家高度
-this.player.height = Math.floor(this.canvas.height / 8);
+//this.player.height = Math.floor(this.canvas.height / 8);
 // 玩家初始位置
-this.player.y = Math.floor((this.canvas.height - this.player.height) / 2);
+//this.player.y = Math.floor((this.canvas.height - this.player.height) / 2);
         this.ai = Ai.new.call(this, 'right');
         // 电脑高度
-this.ai.height = Math.floor(this.canvas.height / 8);
+//this.ai.height = Math.floor(this.canvas.height / 8);
 // 电脑初始位置
-this.ai.y = Math.floor((this.canvas.height - this.ai.height) / 2);
+//this.ai.y = Math.floor((this.canvas.height - this.ai.height) / 2);
         this.ball = Ball.new.call(this);
  
         this.ai.speed = 5;
